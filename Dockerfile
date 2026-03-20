@@ -1,15 +1,16 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Fix Apache MPM conflict
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     zip \
     unzip \
-    && a2dismod mpm_event mpm_worker \
-    && a2enmod mpm_prefork rewrite \
     && docker-php-ext-install pdo pdo_mysql mysqli mbstring \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy project files
 COPY . /var/www/html/
@@ -17,21 +18,9 @@ COPY . /var/www/html/
 # Set working directory
 WORKDIR /var/www/html
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
+EXPOSE 8080
 
-# Apache config to allow .htaccess
-RUN echo '<Directory /var/www/html>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/custom.conf \
-    && a2enconf custom
-
-EXPOSE 80
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "."]
