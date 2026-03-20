@@ -1,10 +1,14 @@
 FROM php:8.2-apache
 
-# Install PDO MySQL and other extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Install system dependencies first
+RUN apt-get update && apt-get install -y \
+    libonig-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
 COPY . /var/www/html/
