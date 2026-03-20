@@ -23,11 +23,11 @@ class Database
 
     private static function createConnection(): PDO
     {
-        $host = "mysql.railway.internal";
-        $dbname = "railway";
-        $username = "root";
-        $password = "BHfrufzkllYecpesgVYtYsxOVLwGrUIF";
-        $port = 3306;
+        $host     = getenv('MYSQLHOST')     ?: 'mysql.railway.internal';
+        $dbname   = getenv('MYSQLDATABASE') ?: 'railway';
+        $username = getenv('MYSQLUSER')     ?: 'root';
+        $password = getenv('MYSQLPASSWORD') ?: 'BHfrufzkllYecpesgVYtYsxOVLwGrUIF';
+        $port     = getenv('MYSQLPORT')     ?: 3306;
 
         $dsn = "mysql:host={$host};dbname={$dbname};port=$port;charset=utf8mb4";
 
@@ -39,7 +39,6 @@ class Database
             ]);
 
             return $pdo;
-
         } catch (PDOException $e) {
             throw new PDOException(
                 "Database connection failed: " . $e->getMessage(),
