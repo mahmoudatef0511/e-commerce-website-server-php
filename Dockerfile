@@ -1,14 +1,16 @@
 FROM php:8.2-apache
 
-# Install system dependencies first
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     zip \
     unzip \
     && docker-php-ext-install pdo pdo_mysql mysqli mbstring \
-    && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Fix MPM conflict - disable mpm_event, enable mpm_prefork
+RUN a2dismod mpm_event && a2enmod mpm_prefork rewrite
 
 # Copy project files
 COPY . /var/www/html/
