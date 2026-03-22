@@ -16,11 +16,11 @@ class ProductType extends ObjectType
             'fields' => [
                 'product_id' => [
                     'type' => Type::nonNull(Type::int()),
-                    'resolve' => fn($product) => $product->getProductId()
+                    'resolve' => fn($product) => $product->getId()
                 ],
                 'id' => [
                     'type' => Type::string(),
-                    'resolve' => fn($product) => $product->getId()
+                    'resolve' => fn($product) => $product->getProductId()
                 ],
                 'name' => [
                     'type' => Type::string(),

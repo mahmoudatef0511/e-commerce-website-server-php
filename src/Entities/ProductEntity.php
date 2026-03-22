@@ -103,7 +103,7 @@ class ProductEntity extends AbstractEntity
         return $this->product_id;
     }
 
-    public function setProductId(int $product_id): void
+    public function setProductId(string $product_id): void
     {
         $this->product_id = $product_id;
     }
