@@ -5,31 +5,17 @@ namespace App\Repositories;
 use App\Model\Product as ProductModel;
 use App\Entities\ProductEntity;
 
-class ProductRepository
+class ProductRepository extends AbstractRepository
 {
-    public static function all(): array
+    protected static function getModelClass(): string
     {
-        $rawProducts = ProductModel::fetchAll();
-        $entities = self::mapToEntities($rawProducts);
-        return $entities;
+        return ProductModel::class;
     }
 
-    public static function byId(string $id): ?ProductEntity
+    protected static function mapToEntity(array $raw): ProductEntity
     {
-        $rawProduct = ProductModel::fetchById($id);
-        if (!$rawProduct) return null;
-        $entities = self::mapToEntities([$rawProduct]);
-        return $entities[0] ?? null;
-    }
-
-    private static function mapToEntities(array $rawProducts): array
-    {
-        $entities = [];
-        foreach ($rawProducts as $raw) {
-            $product = new ProductEntity($raw);
-            $product->setProductId((int)$raw['product_id']);
-            $entities[] = $product;
-        }
-        return $entities;
+        $product = new ProductEntity($raw);
+        $product->setProductId((int)$raw['product_id']);
+        return $product;
     }
 }

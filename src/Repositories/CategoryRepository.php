@@ -5,30 +5,15 @@ namespace App\Repositories;
 use App\Model\Category as CategoryModel;
 use App\Entities\CategoryEntity;
 
-class CategoryRepository
+class CategoryRepository extends AbstractRepository
 {
-    public static function all(): array
+    protected static function getModelClass(): string
     {
-        $rawCategories = CategoryModel::fetchAll();
-        $entities = self::mapToEntities($rawCategories);
-        return $entities;
+        return CategoryModel::class;
     }
 
-    public static function byId(string $id): ?CategoryEntity
+    protected static function mapToEntity(array $raw): CategoryEntity
     {
-        $rawCategory = CategoryModel::fetchById($id);
-        if (!$rawCategory) return null;
-        $entities = self::mapToEntities([$rawCategory]);
-        return $entities[0] ?? null;
-    }
-
-    private static function mapToEntities(array $rawCategories): array
-    {
-        $entities = [];
-        foreach ($rawCategories as $raw) {
-            $category = new CategoryEntity($raw);
-            $entities[] = $category;
-        }
-        return $entities;
+        return new CategoryEntity($raw);
     }
 }

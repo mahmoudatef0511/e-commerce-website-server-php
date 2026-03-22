@@ -6,23 +6,14 @@ use App\Model\Order as OrderModel;
 use App\Entities\OrderEntity;
 use App\Entities\OrderItemEntity;
 
-class OrderRepository
+class OrderRepository extends AbstractRepository
 {
-    public static function create(array $items, float $total): OrderEntity
+    protected static function getModelClass(): string
     {
-        $rawOrder = OrderModel::create($items, $total);
-        return self::mapToEntity($rawOrder);
+        return OrderModel::class;
     }
 
-    public static function byId(string $id): ?OrderEntity
-    {
-        $rawOrder = OrderModel::fetchById($id);
-        if (!$rawOrder) return null;
-
-        return self::mapToEntity($rawOrder);
-    }
-
-    private static function mapToEntity(array $raw): OrderEntity
+    protected static function mapToEntity(array $raw): OrderEntity
     {
         $order = new OrderEntity($raw);
 
@@ -30,9 +21,18 @@ class OrderRepository
         foreach ($raw['items'] ?? [] as $itemRaw) {
             $items[] = new OrderItemEntity($itemRaw);
         }
-
         $order->setItems($items);
 
         return $order;
+    }
+
+    /**
+     * create() is specific to orders — no equivalent in AbstractRepository.
+     * It delegates to the Model and maps the result to an entity.
+     */
+    public static function create(array $items, float $total): OrderEntity
+    {
+        $rawOrder = OrderModel::create($items, $total);
+        return static::mapToEntity($rawOrder);
     }
 }

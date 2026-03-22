@@ -4,9 +4,14 @@ namespace App\GraphQL\Resolvers;
 
 use App\Repositories\ProductRepository;
 
-class ProductResolver
+class ProductResolver extends AbstractResolver
 {
-    public static function resolveProducts($root, $args)
+    protected static function getRepositoryClass(): string
+    {
+        return ProductRepository::class;
+    }
+
+    public static function resolveProducts($root, $args): array
     {
         if (!empty($args['id'])) {
             return [self::byId($args['id'])];
@@ -19,20 +24,10 @@ class ProductResolver
         return self::all();
     }
 
-    public static function all(): array
-    {
-        return ProductRepository::all();
-    }
-
-    public static function byId(string $id)
-    {
-        return ProductRepository::byId($id);
-    }
-
     public static function byCategory(?string $category): array
     {
-        $all = ProductRepository::all();
-        if (!$category || $category === "all") return $all;
+        $all = self::all();
+        if (!$category || $category === 'all') return $all;
         return array_filter($all, fn($p) => strtolower($p->getCategory()) === strtolower($category));
     }
 }

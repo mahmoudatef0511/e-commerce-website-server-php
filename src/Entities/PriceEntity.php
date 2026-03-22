@@ -2,15 +2,16 @@
 
 namespace App\Entities;
 
-class PriceEntity implements \JsonSerializable
+class PriceEntity extends AbstractEntity
 {
-    private float $amount;
+    private float  $amount;
     private string $currency;
 
     public function setAmount(float $amount): void
     {
         $this->amount = $amount;
     }
+
     public function getAmount(): float
     {
         return $this->amount;
@@ -20,14 +21,16 @@ class PriceEntity implements \JsonSerializable
     {
         $this->currency = $currency;
     }
+
     public function getCurrency(): string
     {
         return $this->currency;
     }
+
     public function jsonSerialize(): array
     {
         return [
-            'amount' => $this->amount,
+            'amount'   => $this->amount,
             'currency' => $this->currency,
         ];
     }

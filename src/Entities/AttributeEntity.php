@@ -2,28 +2,19 @@
 
 namespace App\Entities;
 
-class AttributeEntity implements \JsonSerializable
+class AttributeEntity extends AbstractEntity
 {
-    private int $id;
     private string $name;
     private string $type;
 
     /** @var AttributeItemEntity[] */
     private array $items = [];
 
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     public function getName(): string
     {
         return $this->name;
@@ -33,6 +24,7 @@ class AttributeEntity implements \JsonSerializable
     {
         $this->type = $type;
     }
+
     public function getType(): string
     {
         return $this->type;
@@ -42,6 +34,7 @@ class AttributeEntity implements \JsonSerializable
     {
         $this->items[] = $item;
     }
+
     public function getItems(): array
     {
         return $this->items;
@@ -50,8 +43,8 @@ class AttributeEntity implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'name' => $this->name,
-            'type' => $this->type,
+            'name'  => $this->name,
+            'type'  => $this->type,
             'items' => array_map(fn($item) => $item->jsonSerialize(), $this->items),
         ];
     }

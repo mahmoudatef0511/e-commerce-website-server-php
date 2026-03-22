@@ -4,26 +4,20 @@ namespace App\GraphQL\Resolvers;
 
 use App\Repositories\CategoryRepository;
 
-class CategoryResolver
+class CategoryResolver extends AbstractResolver
 {
-    public static function resolveCategories($root, $args)
+    protected static function getRepositoryClass(): string
+    {
+        return CategoryRepository::class;
+    }
+
+    public static function resolveCategories($root, $args): array
     {
         if (!empty($args['id'])) {
-            return self::byId($args['id']);
+            $category = self::byId($args['id']);
+            return $category ? [$category] : [];
         }
 
         return self::all();
     }
-
-    public static function all() : array
-    {
-        return CategoryRepository::all();
-    }
-
-    public static function byId(string $id): array
-    {
-        $category = CategoryRepository::byId($id);
-        return $category ? [$category] : [];
-    }
-
 }

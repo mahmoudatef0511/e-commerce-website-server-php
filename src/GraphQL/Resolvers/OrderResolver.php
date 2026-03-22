@@ -4,20 +4,24 @@ namespace App\GraphQL\Resolvers;
 
 use App\Repositories\OrderRepository;
 
-class OrderResolver
+class OrderResolver extends AbstractResolver
 {
-    
-    public static function createOrder($root, $args)
+    protected static function getRepositoryClass(): string
+    {
+        return OrderRepository::class;
+    }
+
+    public static function createOrder($root, $args): object
     {
         return OrderRepository::create($args['items'], $args['total']);
     }
 
-    public static function order($root, $args)
+    public static function order($root, $args): ?object
     {
         if (empty($args['id'])) {
             return null;
         }
 
-        return OrderRepository::byId($args['id']);
+        return self::byId($args['id']);
     }
 }

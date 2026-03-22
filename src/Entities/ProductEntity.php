@@ -2,14 +2,13 @@
 
 namespace App\Entities;
 
-class ProductEntity implements \JsonSerializable
+class ProductEntity extends AbstractEntity
 {
-    private int $product_id;
-    private ?string $id = null;
-    private string $name;
-    private ?string $category = null;
-    private bool $inStock = false;
-    private ?string $brand = null;
+    private string     $product_id;
+    private string  $name;
+    private ?string $category    = null;
+    private bool    $inStock     = false;
+    private ?string $brand       = null;
     private ?string $description = null;
 
     /** @var AttributeEntity[] */
@@ -23,21 +22,21 @@ class ProductEntity implements \JsonSerializable
 
     public function __construct(array $data = [])
     {
-        $this->id = $data['id'] ?? null;
-        $this->name = $data['name'] ?? '';
-        $this->category = $data['category'] ?? null;
-        $this->inStock = isset($data['inStock']) ? (bool)$data['inStock'] : ($data['in_stock'] ?? false);
-        $this->brand = $data['brand'] ?? null;
+        $this->product_id          = $data['product_id'] ?? null;
+        $this->name        = $data['name'] ?? '';
+        $this->category    = $data['category'] ?? null;
+        $this->inStock     = isset($data['inStock']) ? (bool)$data['inStock'] : (bool)($data['in_stock'] ?? false);
+        $this->brand       = $data['brand'] ?? null;
         $this->description = $data['description'] ?? null;
         $this->initAttributes($data['attributes'] ?? []);
         $this->initGallery($data['gallery'] ?? []);
         $this->initPrices($data['prices'] ?? []);
     }
 
+    // ── Attributes ────────────────────────────────────────────────
+
     protected function initAttributes(array $attributesData): void
     {
-
-        // Merge with DB attributes
         foreach ($attributesData as $attrRaw) {
             $attr = new AttributeEntity();
             $attr->setId((int)($attrRaw['id'] ?? 0));
@@ -56,9 +55,18 @@ class ProductEntity implements \JsonSerializable
         }
     }
 
-    // ------------------------------
-    // Gallery
-    // ------------------------------
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    protected function addAttribute(AttributeEntity $attribute): void
+    {
+        $this->attributes[] = $attribute;
+    }
+
+    // ── Gallery ───────────────────────────────────────────────────
+
     protected function initGallery(array $galleryData): void
     {
         foreach ($galleryData as $img) {
@@ -71,9 +79,8 @@ class ProductEntity implements \JsonSerializable
         return $this->gallery;
     }
 
-    // ------------------------------
-    // Prices
-    // ------------------------------
+    // ── Prices ────────────────────────────────────────────────────
+
     protected function initPrices(array $pricesData): void
     {
         foreach ($pricesData as $priceRaw) {
@@ -89,51 +96,43 @@ class ProductEntity implements \JsonSerializable
         return $this->prices;
     }
 
-    // ------------------------------
-    // Attributes
-    // ------------------------------
-    public function getAttributes(): array
-    {
-        return $this->attributes;
-    }
+    // ── Core Getters / Setters ────────────────────────────────────
 
-    protected function addAttribute(AttributeEntity $attribute): void
-    {
-        $this->attributes[] = $attribute;
-    }
-
-    // ------------------------------
-    // Getters / Setters for core properties
-    // ------------------------------
-    public function getProductId(): int
+    public function getProductId(): string
     {
         return $this->product_id;
     }
+
     public function setProductId(int $product_id): void
     {
         $this->product_id = $product_id;
     }
 
-    public function getId(): ?string
+    public function getId(): int
     {
         return $this->id;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
+
     public function getCategory(): ?string
     {
         return $this->category;
     }
+
     public function isInStock(): bool
     {
         return $this->inStock;
     }
+
     public function getBrand(): ?string
     {
         return $this->brand;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -150,8 +149,8 @@ class ProductEntity implements \JsonSerializable
             'description' => $this->getDescription(),
             'inStock'     => $this->isInStock(),
             'gallery'     => $this->getGallery(),
-            'attributes'  => array_map(fn($attr) => $attr->jsonSerialize(), $this->getAttributes()),
-            'prices'      => array_map(fn($price) => $price->jsonSerialize(), $this->getPrices()),
+            'attributes'  => array_map(fn($a) => $a->jsonSerialize(), $this->getAttributes()),
+            'prices'      => array_map(fn($p) => $p->jsonSerialize(), $this->getPrices()),
         ];
     }
 }
